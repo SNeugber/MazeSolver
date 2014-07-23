@@ -4,48 +4,126 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using Priority_Queue;
 
 namespace MazeSolver.Console
 {
     class Solver
     {
 
-        int[,] mazeMap;
+        private Node[,] mazeMap;
+        private Point centre;
+        private HeapPriorityQueue<Node> unvisited;
+        private int mazeMaxX, mazeMaxY;
 
         internal Image Execute(Image inputImage)
         {
             var inputBitmap = new Bitmap(inputImage);
-            setMazeMap(inputBitmap);
+            InitImageCentre(inputBitmap);
+            InitMazeMap(inputBitmap);
+            Node target = RunDijkstra();
+            if (target == null) System.Console.WriteLine("No target found!");
+            else System.Console.WriteLine("Found path with cost: " + target.distance);
             return null;
         }
 
-        private void setMazeMap(Bitmap image)
+        private void InitImageCentre(Bitmap image)
         {
-            mazeMap = new int[image.Width, image.Height];
+            centre = new Point((int)(image.Width / 2), (int)(image.Height / 2));
+        }
 
-            //Enumerable.Range(0, image.Width)
-            //    .Zip(Enumerable.Range(0, image.Height), (x, y) => new { x, y })
-            //    .Select(coords => new { X = coords.x, Y = coords.y, Result = PixelTest(image.GetPixel(coords.x,coords.y)) })
-            //    .ToList()
-            //    .ForEach(pixel => mazeMap[pixel.X,pixel.Y] = pixel.Result);
+        private void InitMazeMap(Bitmap image)
+        {
+            mazeMaxX = image.Width;
+            mazeMaxY = image.Height;
+            mazeMap = new Node[mazeMaxX, mazeMaxY];
+            unvisited = new HeapPriorityQueue<Node>(mazeMaxX * mazeMaxY);
 
-            var centre = new Point((int)(image.Width / 2), (int)(image.Height / 2));
-                
             for (int i = 0; i < image.Width; i++)
             {
                 for (int j = 0; j < image.Height; j++)
                 {
                     Color pixel = image.GetPixel(i, j);
-                    mazeMap[i, j] = GetDistanceToCenter(pixel, new Point(i,j), centre);
+                    bool isTraverseable = pixel.R == 255 && pixel.G == 255 && pixel.B == 255; // Only white pixels
+                    mazeMap[i, j] = new Node(new Point(i, j), isTraverseable);
+                    if (isTraverseable)
+                    {
+                        unvisited.Enqueue(mazeMap[i, j], int.MaxValue);
+                    }
                 }
             }
-            
+
+            Node start = mazeMap[image.Width / 2, 0];
+            start.distance = 0;
+            unvisited.UpdatePriority(start, 0);
+
         }
 
-        private static int GetDistanceToCenter(Color pixel, Point xy, Point centre)
+        private Node RunDijkstra()
         {
-            if (pixel.R == 255 && pixel.G == 255 && pixel.B == 255) return xy.X * centre.X + xy.Y * centre.Y;
-            return -1;
+            while (unvisited.Count != 0)
+            {
+                Node current = unvisited.Dequeue();
+                if (current.position.X == centre.X && current.position.Y == centre.Y)
+                {
+                    return current;
+                }
+
+                foreach (Node neighbour in getNeighbours(current))
+                {
+                    int altDistance = current.distance + 1;
+                    if (altDistance < neighbour.distance)
+                    {
+                        neighbour.distance = altDistance;
+                        neighbour.previous = current;
+                        unvisited.UpdatePriority(neighbour, altDistance);
+                    }
+                }
+            }
+
+            return null; // No path found
+        }
+
+        private List<Node> getNeighbours(Node current)
+        {
+            List<Node> neighbours = new List<Node>();
+            Node neighbour;
+
+            if (current.position.X > 0 && current.position.Y > 0)
+            {
+                neighbour = mazeMap[current.position.X - 1, current.position.Y - 1];
+                if(neighbour.traverseable)
+                    neighbours.Add(neighbour);
+            }
+
+            if (current.position.X < mazeMaxX - 1 && current.position.Y > 0)
+            {
+                neighbour = mazeMap[current.position.X + 1, current.position.Y - 1];
+                if (neighbour.traverseable)
+                    neighbours.Add(neighbour);
+            }
+
+            if (current.position.X < mazeMaxX - 1 && current.position.Y < mazeMaxY - 1)
+            {
+                neighbour = mazeMap[current.position.X + 1, current.position.Y + 1];
+                if (neighbour.traverseable)
+                    neighbours.Add(neighbour);
+            }
+
+
+            if (current.position.X > 0 && current.position.Y < mazeMaxY - 1)
+            {
+                neighbour = mazeMap[current.position.X - 1, current.position.Y + 1];
+                if (neighbour.traverseable)
+                    neighbours.Add(neighbour);
+            }
+
+            return neighbours;
+        }
+
+        private int GetPointDistance(Point a, Point b)
+        {
+            return a.X * b.X + a.Y * b.Y;
         }
     }
 }
