@@ -15,16 +15,18 @@ namespace MazeSolver.Console
         private Point centre;
         private HeapPriorityQueue<Node> unvisited;
         private int mazeMaxX, mazeMaxY;
+        private Node target;
 
         internal Image Execute(Image inputImage)
         {
             var inputBitmap = new Bitmap(inputImage);
             InitImageCentre(inputBitmap);
             InitMazeMap(inputBitmap);
-            Node target = RunDijkstra();
-            if (target == null) System.Console.WriteLine("No target found!");
-            else System.Console.WriteLine("Found path with cost: " + target.distance);
-            return null;
+            RunDijkstra();
+            DrawMazePath(inputBitmap);
+            //if (target == null) System.Console.WriteLine("No target found!");
+            //else System.Console.WriteLine("Found path with cost: " + target.distance);
+            return inputBitmap;
         }
 
         private void InitImageCentre(Bitmap image)
@@ -53,23 +55,28 @@ namespace MazeSolver.Console
                 }
             }
 
-            Node start = mazeMap[image.Width / 2, 0];
+            Node start = mazeMap[image.Width / 2, image.Height - 1];
             start.distance = 0;
             unvisited.UpdatePriority(start, 0);
 
         }
 
-        private Node RunDijkstra()
+        private void RunDijkstra()
         {
             while (unvisited.Count != 0)
             {
                 Node current = unvisited.Dequeue();
                 if (current.position.X == centre.X && current.position.Y == centre.Y)
                 {
-                    return current;
+                    target = current;
+                    System.Console.WriteLine(current.distance);
+                    break;
+                    //return current;
                 }
 
-                foreach (Node neighbour in getNeighbours(current))
+                current.visited = true;
+
+                foreach (Node neighbour in GetUnvisitedNeighbours(current))
                 {
                     int altDistance = current.distance + 1;
                     if (altDistance < neighbour.distance)
@@ -81,44 +88,57 @@ namespace MazeSolver.Console
                 }
             }
 
-            return null; // No path found
+            //return null; // No path found
         }
 
-        private List<Node> getNeighbours(Node current)
+        private void DrawMazePath(Bitmap mazeImage)
+        {
+            if (target == null)
+                return;
+
+            //mazeImage.GetPixel(target.position.X, target.position.Y)
+            mazeImage.SetPixel(target.position.X, target.position.Y, Color.Magenta);
+
+            Node previous = target.previous;
+            do
+            {
+                mazeImage.SetPixel(previous.position.X, previous.position.Y, Color.Magenta);
+            } while ((previous = previous.previous) != null);
+        }
+
+        private List<Node> GetUnvisitedNeighbours(Node current)
         {
             List<Node> neighbours = new List<Node>();
-            Node neighbour;
 
-            if (current.position.X > 0 && current.position.Y > 0)
-            {
-                neighbour = mazeMap[current.position.X - 1, current.position.Y - 1];
-                if(neighbour.traverseable)
-                    neighbours.Add(neighbour);
-            }
+            AddNeighbourAtXYOffset(current, neighbours, 0, 1);
+            AddNeighbourAtXYOffset(current, neighbours, 0, -1);
 
-            if (current.position.X < mazeMaxX - 1 && current.position.Y > 0)
-            {
-                neighbour = mazeMap[current.position.X + 1, current.position.Y - 1];
-                if (neighbour.traverseable)
-                    neighbours.Add(neighbour);
-            }
+            AddNeighbourAtXYOffset(current, neighbours, 1, 0);
+            AddNeighbourAtXYOffset(current, neighbours, 1, 1);
+            AddNeighbourAtXYOffset(current, neighbours, 1, -1);
 
-            if (current.position.X < mazeMaxX - 1 && current.position.Y < mazeMaxY - 1)
-            {
-                neighbour = mazeMap[current.position.X + 1, current.position.Y + 1];
-                if (neighbour.traverseable)
-                    neighbours.Add(neighbour);
-            }
-
-
-            if (current.position.X > 0 && current.position.Y < mazeMaxY - 1)
-            {
-                neighbour = mazeMap[current.position.X - 1, current.position.Y + 1];
-                if (neighbour.traverseable)
-                    neighbours.Add(neighbour);
-            }
+            AddNeighbourAtXYOffset(current, neighbours, -1, 0);
+            AddNeighbourAtXYOffset(current, neighbours, -1, 1);
+            AddNeighbourAtXYOffset(current, neighbours, -1, -1);
 
             return neighbours;
+        }
+
+        private void AddNeighbourAtXYOffset(Node current, List<Node> neighbours, int XOffset, int YOffset)
+        {
+            Node neighbour;
+            bool validPos =
+                current.position.X + XOffset > 0 &&
+                current.position.X + XOffset < mazeMaxX &&
+                current.position.Y + YOffset > 0 &&
+                current.position.Y + YOffset < mazeMaxY;
+
+            if (validPos)
+            {
+                neighbour = mazeMap[current.position.X + XOffset, current.position.Y + YOffset];
+                if (neighbour.traverseable && !neighbour.visited)
+                    neighbours.Add(neighbour);
+            }
         }
 
         private int GetPointDistance(Point a, Point b)

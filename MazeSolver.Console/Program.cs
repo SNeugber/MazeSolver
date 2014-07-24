@@ -20,7 +20,7 @@ namespace MazeSolver.Console
             if (!TryGetInputImageFromFile(inputImagePath, out inputImage) || !IsOutputImageValid(outputImagePath)) return;
             var solver = new Solver();
             var outputImage = solver.Execute(inputImage);
-
+            outputImage.Save(outputImagePath);
         }
 
         private static bool TryGetInputImageFromFile(string inputImagePath, out Image inputImage)
