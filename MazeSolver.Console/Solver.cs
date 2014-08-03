@@ -8,7 +8,7 @@ using Priority_Queue;
 
 namespace MazeSolver.Console
 {
-    class Solver
+    public class Solver
     {
 
         private Node[,] mazeMap;
@@ -17,7 +17,7 @@ namespace MazeSolver.Console
         private int mazeMaxX, mazeMaxY;
         private Node target;
 
-        internal Image Execute(Image inputImage)
+        public Image Execute(Image inputImage)
         {
             var inputBitmap = new Bitmap(inputImage);
             InitImageCentre(inputBitmap);

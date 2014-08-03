@@ -1,8 +1,27 @@
 ﻿<Window x:Class="MazeSolver.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Maze Solver" Height="600" Width="910">
     <Grid>
-        
+        <DockPanel>
+            <ToolBar DockPanel.Dock="Top" Name="fileSelectToolbar">
+                <Label Name="InputImageSelectLabel" Content="Input Image:"></Label>
+                <Button Name="SelectInputFileButton" Content="Click to select an input image file" Width="200" Click="SelectInputFileButton_Click"></Button>
+                <Button Name="SolveMazeButton" Content="Solve Maze" Click="SolveMazeButton_Click" IsEnabled="False"></Button>
+                <Label Name="OutputImageSelectLabel" Content="Output Image:"></Label>
+                <Button Name="SaveOutputFileButton" Content="Click to save the output to file" Width="200" Click="SaveOutputFileButton_Click" IsEnabled="False"></Button>
+                
+            </ToolBar>
+            <Grid Name="mainGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <GridSplitter Name="mainGridSplitter" Margin="0" Width="5" Grid.Column="1" HorizontalAlignment="Left"/>
+                <Image Source="" Name="originalImage" Stretch="Uniform" Grid.Column="0"/>
+                <Image Source="" Name="solvedImage" Stretch="Uniform" Grid.Column="2"/>
+            </Grid>
+        </DockPanel>
     </Grid>
 </Window>

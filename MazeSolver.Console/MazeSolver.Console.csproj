@@ -51,7 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Priority Queue">
-      <HintPath>..\..\c_sharp_prio_queue\BlueRaja-high-speed-priority-queue-for-c-19dda413a12d\Priority Queue\bin\Release\Priority Queue.dll</HintPath>
+      <HintPath>..\Dependencies\Priority Queue.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,10 +63,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputValidator.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Solver.cs" />
+    <Compile Include="SolverController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
