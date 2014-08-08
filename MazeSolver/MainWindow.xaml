@@ -4,23 +4,29 @@
         Title="Maze Solver" Height="600" Width="910">
     <Grid>
         <DockPanel>
-            <ToolBar DockPanel.Dock="Top" Name="fileSelectToolbar">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_Image">
+                    <MenuItem Header="_New" Click="ClearInputFileButton_Click"/>
+                    <MenuItem Header="_Open" Click="SelectInputFileButton_Click"/>
+                    <MenuItem Header="_Save" Click="SaveOutputFileButton_Click"/>
+                </MenuItem>
+                <Separator />
+                <MenuItem Name="SolveMazeButton" Header="_Solve" Click="SolveMazeButton_Click"/>
+            </Menu>
+
+            <!--<ToolBar DockPanel.Dock="Top" Name="fileSelectToolbar">
                 <Label Name="InputImageSelectLabel" Content="Input Image:"></Label>
                 <Button Name="SelectInputFileButton" Content="Click to select an input image file" Width="200" Click="SelectInputFileButton_Click"></Button>
                 <Button Name="SolveMazeButton" Content="Solve Maze" Click="SolveMazeButton_Click" IsEnabled="False"></Button>
                 <Label Name="OutputImageSelectLabel" Content="Output Image:"></Label>
                 <Button Name="SaveOutputFileButton" Content="Click to save the output to file" Width="200" Click="SaveOutputFileButton_Click" IsEnabled="False"></Button>
                 
-            </ToolBar>
+            </ToolBar>-->
             <Grid Name="mainGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <GridSplitter Name="mainGridSplitter" Margin="0" Width="5" Grid.Column="1" HorizontalAlignment="Left"/>
-                <Image Source="" Name="originalImage" Stretch="Uniform" Grid.Column="0"/>
-                <Image Source="" Name="solvedImage" Stretch="Uniform" Grid.Column="2"/>
+                <Image Source="" Name="mazeImage" Stretch="Uniform" Grid.Column="0"/>
             </Grid>
         </DockPanel>
     </Grid>

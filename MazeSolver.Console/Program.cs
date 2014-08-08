@@ -15,7 +15,7 @@ namespace MazeSolver.Console
         {
             String inputImagePath = args[0];
             String outputImagePath = args[1];
-            SolverController.TrySolveAndSaveToFile(inputImagePath, outputImagePath);
+            new SolverController().TrySolveAndSaveToFile(inputImagePath, outputImagePath);
         }
     }
 }

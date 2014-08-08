@@ -30,6 +30,12 @@ namespace MazeSolver
             InitializeComponent();
         }
 
+        private void ClearInputFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            SolveMazeButton.IsEnabled = false;
+            mazeImage.Source = null;
+        }
+
         private void SelectInputFileButton_Click(object sender, RoutedEventArgs e)
         {
             SolveMazeButton.IsEnabled = false;
@@ -43,13 +49,12 @@ namespace MazeSolver
             if (result.HasValue && result.Value)
             {
                 inputFileName = dialog.FileName;
-                SelectInputFileButton.Content = inputFileName;
                 BitmapImage inputImage = new BitmapImage();
                 inputImage.CacheOption = BitmapCacheOption.OnLoad;
                 inputImage.BeginInit();
                 inputImage.UriSource = new Uri(inputFileName);
                 inputImage.EndInit();
-                originalImage.Source = inputImage;
+                mazeImage.Source = inputImage;
                 SolveMazeButton.IsEnabled = true;
             }
         }
@@ -73,24 +78,30 @@ namespace MazeSolver
 
         private void SolveMazeButton_Click(object sender, RoutedEventArgs e)
         {
-            SaveOutputFileButton.IsEnabled = false;
             tempFileName = Directory.GetCurrentDirectory() + @"\temp.jpg";
             try
             {
-                SolverController.TrySolveAndSaveToFile(inputFileName, tempFileName);
-                BitmapImage outputImage = new BitmapImage();
-                outputImage.CacheOption = BitmapCacheOption.OnLoad;
-                outputImage.BeginInit();
-                outputImage.UriSource = new Uri(tempFileName);
-                outputImage.EndInit();
-                solvedImage.Source = outputImage;
-                SaveOutputFileButton.IsEnabled = true;
+               // TODO: display a progress bar here
+                var solver = new SolverController();
+                solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
+                solver.TrySolveAndSaveToFile(inputFileName, tempFileName);
+
             }
             catch (ArgumentException exception)
             {
                 //TODO Add exception display 
             }
 
+        }
+
+        private void MazeSolved(SolverController sc, EventArgs e)
+        {
+            BitmapImage outputImage = new BitmapImage();
+            outputImage.CacheOption = BitmapCacheOption.OnLoad;
+            outputImage.BeginInit();
+            outputImage.UriSource = new Uri(tempFileName);
+            outputImage.EndInit();
+            mazeImage.Source = outputImage;
         }
 
 
