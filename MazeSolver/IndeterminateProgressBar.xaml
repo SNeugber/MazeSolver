@@ -1,0 +1,10 @@
+﻿<Window x:Class="MazeSolver.IndeterminateProgressBar"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ProgressBarIndeterminateSample" Height="100" Width="300"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="30">
+        <ProgressBar Minimum="0" Maximum="100" Name="pbStatus" IsIndeterminate="True" />
+        <TextBlock Text="Solving Maze" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+</Window>
