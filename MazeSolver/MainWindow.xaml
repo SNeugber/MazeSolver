@@ -10,7 +10,9 @@
                     <MenuItem Header="_Open" Click="SelectInputFileButton_Click"/>
                     <MenuItem Header="_Save" Click="SaveOutputFileButton_Click"/>
                 </MenuItem>
-                <Separator />
+                <Separator Width="5"/>
+                <MenuItem Name="SetMazeStartGoalButton" Header="_Set Start/End" Click="SetMazeStartGoalButton_Click"/>
+                <Separator Width="5"/>
                 <MenuItem Name="SolveMazeButton" Header="_Solve" Click="SolveMazeButton_Click"/>
             </Menu>
 
@@ -26,7 +28,11 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="mazeImage" Stretch="Uniform" Grid.Column="0"/>
+                <Image Name="mazeImage" Stretch="Uniform" Grid.Column="0" MouseDown="MazeImage_MouseDown">
+                    <Image.ToolTip>
+                        <ToolTip Name="ImageHoverToolTip" />
+                    </Image.ToolTip>
+                </Image>
             </Grid>
         </DockPanel>
     </Grid>

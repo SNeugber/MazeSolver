@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Drawing;
 using MazeSolver.Console;
 
 namespace MazeSolver
@@ -28,6 +29,11 @@ namespace MazeSolver
         string outputFileName;
         IndeterminateProgressBar progressBar;
         private SynchronizationContext _uiContext = SynchronizationContext.Current;
+        private Point MazeStart;
+        private Point MazeEnd;
+        private bool MazeStartSet = false;
+        private bool MazeEndSet = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,6 +42,7 @@ namespace MazeSolver
         private void ClearInputFileButton_Click(object sender, RoutedEventArgs e)
         {
             SolveMazeButton.IsEnabled = false;
+            SetMazeStartGoalButton.IsEnabled = false;
             mazeImage.Source = null;
         }
 
@@ -58,7 +65,7 @@ namespace MazeSolver
                 inputImage.UriSource = new Uri(inputFileName);
                 inputImage.EndInit();
                 mazeImage.Source = inputImage;
-                SolveMazeButton.IsEnabled = true;
+                SetMazeStartGoalButton.IsEnabled = true;
             }
         }
 
@@ -78,22 +85,57 @@ namespace MazeSolver
             }
         }
 
+        private void SetMazeStartGoalButton_Click(object sender, RoutedEventArgs e)
+        {
+            ImageHoverToolTip.Content = "Set Start";
+            MazeStartSet = false;
+            MazeEndSet = false;
+            SolveMazeButton.IsEnabled = true;
+        }
+
+        private void MazeImage_MouseDown(object sender, RoutedEventArgs e)
+        {
+            Point MousePosition = Mouse.GetPosition((Image)sender);
+            System.Diagnostics.Debug.WriteLine(
+                "Mouse position: " +
+                MousePosition.X + ", " + MousePosition.Y);
+            if (!MazeStartSet)
+            {
+                MazeStartSet = true;
+                MazeStart = MousePosition;
+                ImageHoverToolTip.Content = "Set End";
+            }
+            else if (!MazeEndSet)
+            {
+
+                MazeEndSet = true;
+                MazeEnd = MousePosition;
+                SolveMazeButton.IsEnabled = true;
+            }
+            else
+            {
+                // TODO: Show warning
+            }
+            //System.Diagnostics.Trace.WriteLine(
+            //    "Mouse Down on image at position: " +
+            //    MousePosition.X + ", " + MousePosition.Y);
+        }
+
 
         private void SolveMazeButton_Click(object sender, RoutedEventArgs e)
         {
+            // This should never happen, because the button should only be enabled
+            // after both tart & end have been specified by the user
+            if (!(MazeStartSet && MazeEndSet)) return;
             tempFileName = Directory.GetCurrentDirectory() + @"\temp.jpg";
             try
             {
-                // TODO: display a progress bar here
-              
-                //progressBar.Activate();
-
                 new Thread(() =>
                 {
                     //Thread.CurrentThread.IsBackground = true;
                     var solver = new SolverController();
                     solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
-                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName);
+                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName, MazeStart, MazeEnd);
                 }).Start();
                 progressBar = new IndeterminateProgressBar();
                 progressBar.Owner = this;

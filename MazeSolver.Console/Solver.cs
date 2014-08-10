@@ -12,26 +12,22 @@ namespace MazeSolver.Console
     {
 
         private Node[,] mazeMap;
-        private Point centre;
+        private Point start, end;
         private HeapPriorityQueue<Node> unvisited;
         private int mazeMaxX, mazeMaxY;
         private Node target;
 
-        public Image Execute(Image inputImage)
+        public Image Execute(Image inputImage, System.Windows.Point start, System.Windows.Point end)
         {
+            this.start = new Point((int)start.X,(int)start.Y);
+            this.end = new Point((int)end.X, (int)end.Y);
             var inputBitmap = new Bitmap(inputImage);
-            InitImageCentre(inputBitmap);
             InitMazeMap(inputBitmap);
             RunDijkstra();
             DrawMazePath(inputBitmap);
             //if (target == null) System.Console.WriteLine("No target found!");
             //else System.Console.WriteLine("Found path with cost: " + target.distance);
             return inputBitmap;
-        }
-
-        private void InitImageCentre(Bitmap image)
-        {
-            centre = new Point((int)(image.Width / 2), (int)(image.Height / 2));
         }
 
         private void InitMazeMap(Bitmap image)
@@ -55,9 +51,9 @@ namespace MazeSolver.Console
                 }
             }
 
-            Node start = mazeMap[image.Width / 2, image.Height - 1];
-            start.distance = 0;
-            unvisited.UpdatePriority(start, 0);
+            Node startNode = mazeMap[this.start.X,this.start.Y];
+            startNode.distance = 0;
+            unvisited.UpdatePriority(startNode, 0);
 
         }
 
@@ -66,7 +62,7 @@ namespace MazeSolver.Console
             while (unvisited.Count != 0)
             {
                 Node current = unvisited.Dequeue();
-                if (current.position.X == centre.X && current.position.Y == centre.Y)
+                if (current.position.X == end.X && current.position.Y == end.Y)
                 {
                     target = current;
                     System.Console.WriteLine(current.distance);

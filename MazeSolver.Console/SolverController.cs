@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MazeSolver.Console
 {
@@ -14,13 +15,13 @@ namespace MazeSolver.Console
         public EventArgs e = null;
         public delegate void MazeSolvedHandler(SolverController m, EventArgs e);
 
-        public void TrySolveAndSaveToFile(string inputImageFilePath, string outputImageFilePath)
+        public void TrySolveAndSaveToFile(string inputImageFilePath, string outputImageFilePath, System.Windows.Point start, System.Windows.Point end)
         {
             Image inputImage;
             if (!InputValidator.TryGetInputImageFromFile(inputImageFilePath, out inputImage)) throw new ArgumentException("Input Image Loading failed. Check that file is a valid image");
             //TODO Add further validation information
             if (!InputValidator.IsOutputImageValid(outputImageFilePath)) throw new ArgumentException("Output Image File path check failed. ");
-            Image outputImage = new Solver().Execute(inputImage);
+            Image outputImage = new Solver().Execute(inputImage, start, end);
             outputImage.Save(outputImageFilePath);
             if (Solved != null)
                 Solved(this, e);
