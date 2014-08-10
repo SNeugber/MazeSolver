@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -25,6 +26,8 @@ namespace MazeSolver
         string inputFileName;
         string tempFileName;
         string outputFileName;
+        IndeterminateProgressBar progressBar;
+        private SynchronizationContext _uiContext = SynchronizationContext.Current;
         public MainWindow()
         {
             InitializeComponent();
@@ -71,7 +74,7 @@ namespace MazeSolver
             if (result == true)
             {
                 string saveFileName = dialog.FileName;
-                File.Copy(tempFileName,saveFileName,true);
+                File.Copy(tempFileName, saveFileName, true);
             }
         }
 
@@ -81,10 +84,21 @@ namespace MazeSolver
             tempFileName = Directory.GetCurrentDirectory() + @"\temp.jpg";
             try
             {
-               // TODO: display a progress bar here
-                var solver = new SolverController();
-                solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
-                solver.TrySolveAndSaveToFile(inputFileName, tempFileName);
+                // TODO: display a progress bar here
+              
+                //progressBar.Activate();
+
+                new Thread(() =>
+                {
+                    //Thread.CurrentThread.IsBackground = true;
+                    var solver = new SolverController();
+                    solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
+                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName);
+                }).Start();
+                progressBar = new IndeterminateProgressBar();
+                progressBar.Owner = this;
+                progressBar.WindowStyle = WindowStyle.None;
+                progressBar.ShowDialog();
 
             }
             catch (ArgumentException exception)
@@ -96,12 +110,19 @@ namespace MazeSolver
 
         private void MazeSolved(SolverController sc, EventArgs e)
         {
-            BitmapImage outputImage = new BitmapImage();
-            outputImage.CacheOption = BitmapCacheOption.OnLoad;
-            outputImage.BeginInit();
-            outputImage.UriSource = new Uri(tempFileName);
-            outputImage.EndInit();
-            mazeImage.Source = outputImage;
+            // Gets called from background worker thread, but need to access image in main UI thread
+            _uiContext.Post(new SendOrPostCallback(new Action<object>(o =>
+            {
+                BitmapImage outputImage = new BitmapImage();
+                outputImage.CacheOption = BitmapCacheOption.OnLoad;
+                outputImage.BeginInit();
+                outputImage.UriSource = new Uri(tempFileName);
+                outputImage.EndInit();
+                mazeImage.Source = outputImage;
+                progressBar.Close();
+            })), null);
+   
+            
         }
 
 
