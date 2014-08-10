@@ -64,7 +64,11 @@ namespace MazeSolver
                 inputImage.BeginInit();
                 inputImage.UriSource = new Uri(inputFileName);
                 inputImage.EndInit();
-                mazeImage.Source = inputImage;
+                //ImageColorConverter
+                //MazeSolver.Console.ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(inputImage);
+                WriteableBitmap blackAndWhiteImage = ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(new WriteableBitmap(inputImage));
+                mazeImage.Source = blackAndWhiteImage;
+                //mazeImage.Source = inputImage;
                 SetMazeStartGoalButton.IsEnabled = true;
             }
         }
