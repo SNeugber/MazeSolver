@@ -37,6 +37,12 @@ namespace MazeSolver.Console
             mazeMap = new Node[mazeMaxX, mazeMaxY];
             unvisited = new HeapPriorityQueue<Node>(mazeMaxX * mazeMaxY);
 
+            EnqueueTraverseablePixels(image);
+            UpdateStartNodePriority();
+        }
+
+        private void EnqueueTraverseablePixels(Bitmap image)
+        {
             for (int i = 0; i < image.Width; i++)
             {
                 for (int j = 0; j < image.Height; j++)
@@ -50,11 +56,14 @@ namespace MazeSolver.Console
                     }
                 }
             }
+        }
 
-            Node startNode = mazeMap[this.start.X,this.start.Y];
+        private void UpdateStartNodePriority()
+        {
+
+            Node startNode = mazeMap[this.start.X, this.start.Y];
             startNode.distance = 0;
             unvisited.UpdatePriority(startNode, 0);
-
         }
 
         private void RunDijkstra()
@@ -62,29 +71,37 @@ namespace MazeSolver.Console
             while (unvisited.Count != 0)
             {
                 Node current = unvisited.Dequeue();
-                if (current.position.X == end.X && current.position.Y == end.Y)
-                {
-                    target = current;
-                    System.Console.WriteLine(current.distance);
-                    break;
-                    //return current;
-                }
+                if (TestAndSetTarget(current)) return;
 
                 current.visited = true;
 
                 foreach (Node neighbour in GetUnvisitedNeighbours(current))
                 {
-                    int altDistance = current.distance + 1;
-                    if (altDistance < neighbour.distance)
-                    {
-                        neighbour.distance = altDistance;
-                        neighbour.previous = current;
-                        unvisited.UpdatePriority(neighbour, altDistance);
-                    }
+                    TestAndSetMinDistance(current, neighbour);
                 }
             }
+            throw new PathNotFoundException();
+        }
 
-            //return null; // No path found
+        private void TestAndSetMinDistance(Node current, Node neighbour)
+        {
+            int altDistance = current.distance + 1;
+            if (altDistance < neighbour.distance)
+            {
+                neighbour.distance = altDistance;
+                neighbour.previous = current;
+                unvisited.UpdatePriority(neighbour, altDistance);
+            }
+        }
+
+        private bool TestAndSetTarget(Node n)
+        {
+            if (n.position.X == end.X && n.position.Y == end.Y)
+            {
+                target = n;
+                return true;
+            }
+            return false;
         }
 
         private void DrawMazePath(Bitmap mazeImage)

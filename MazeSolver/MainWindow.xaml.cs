@@ -28,11 +28,12 @@ namespace MazeSolver
         string tempFileName;
         string outputFileName;
         IndeterminateProgressBar progressBar;
-        private SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Point MazeStart;
-        private Point MazeEnd;
-        private bool MazeStartSet = false;
-        private bool MazeEndSet = false;
+        private SynchronizationContext uiContext = SynchronizationContext.Current;
+        private Point mazeStart;
+        private Point mazeEnd;
+        private bool mazeStartSet = false;
+        private bool mazeEndSet = false;
+        private ImageColorAccess imageColor;
 
         public MainWindow()
         {
@@ -64,10 +65,11 @@ namespace MazeSolver
                 inputImage.BeginInit();
                 inputImage.UriSource = new Uri(inputFileName);
                 inputImage.EndInit();
+                imageColor = new ImageColorAccess(new WriteableBitmap(inputImage));
                 //ImageColorConverter
                 //MazeSolver.Console.ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(inputImage);
-                WriteableBitmap blackAndWhiteImage = ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(new WriteableBitmap(inputImage));
-                mazeImage.Source = blackAndWhiteImage;
+                //WriteableBitmap blackAndWhiteImage = ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(new WriteableBitmap(inputImage));
+                mazeImage.Source = inputImage;
                 //mazeImage.Source = inputImage;
                 SetMazeStartGoalButton.IsEnabled = true;
             }
@@ -92,9 +94,9 @@ namespace MazeSolver
         private void SetMazeStartGoalButton_Click(object sender, RoutedEventArgs e)
         {
             ImageHoverToolTip.Content = "Set Start";
-            MazeStartSet = false;
-            MazeEndSet = false;
-            SolveMazeButton.IsEnabled = true;
+            mazeStartSet = false;
+            mazeEndSet = false;
+            SolveMazeButton.IsEnabled = false;
         }
 
         private void MazeImage_MouseDown(object sender, RoutedEventArgs e)
@@ -103,18 +105,20 @@ namespace MazeSolver
             System.Diagnostics.Debug.WriteLine(
                 "Mouse position: " +
                 MousePosition.X + ", " + MousePosition.Y);
-            if (!MazeStartSet)
+            if (!mazeStartSet && imageColor.IsPixelPureWhite((int)MousePosition.X,(int)MousePosition.Y))
             {
-                MazeStartSet = true;
-                MazeStart = MousePosition;
+                mazeStartSet = true;
+                mazeStart = MousePosition;
                 ImageHoverToolTip.Content = "Set End";
             }
-            else if (!MazeEndSet)
+            else if (!mazeEndSet && imageColor.IsPixelPureWhite((int)MousePosition.X, (int)MousePosition.Y))
             {
 
-                MazeEndSet = true;
-                MazeEnd = MousePosition;
+                mazeEndSet = true;
+                mazeEnd = MousePosition;
                 SolveMazeButton.IsEnabled = true;
+                ImageHoverToolTip.Content = "All Set";
+
             }
             else
             {
@@ -130,7 +134,7 @@ namespace MazeSolver
         {
             // This should never happen, because the button should only be enabled
             // after both tart & end have been specified by the user
-            if (!(MazeStartSet && MazeEndSet)) return;
+            if (!(mazeStartSet && mazeEndSet)) return;
             tempFileName = Directory.GetCurrentDirectory() + @"\temp.jpg";
             try
             {
@@ -139,7 +143,7 @@ namespace MazeSolver
                     //Thread.CurrentThread.IsBackground = true;
                     var solver = new SolverController();
                     solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
-                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName, MazeStart, MazeEnd);
+                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName, mazeStart, mazeEnd);
                 }).Start();
                 progressBar = new IndeterminateProgressBar();
                 progressBar.Owner = this;
@@ -157,7 +161,7 @@ namespace MazeSolver
         private void MazeSolved(SolverController sc, EventArgs e)
         {
             // Gets called from background worker thread, but need to access image in main UI thread
-            _uiContext.Post(new SendOrPostCallback(new Action<object>(o =>
+            uiContext.Post(new SendOrPostCallback(new Action<object>(o =>
             {
                 BitmapImage outputImage = new BitmapImage();
                 outputImage.CacheOption = BitmapCacheOption.OnLoad;

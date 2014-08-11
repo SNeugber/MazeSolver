@@ -5,66 +5,79 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using System.Windows;
 
 
 namespace MazeSolver.Console
 {
-    public class ImageColorConverter
+    public class ImageColorAccess
     {
-        public static WriteableBitmap ConvertAnyNotWhitePixelsToBlack(WriteableBitmap input)
+
+        int imageHeight;
+        int imageWidth;
+        int widthInByte;
+        byte[] pixelData;
+        double dpiX, dpiY;
+        PixelFormat pixForm;
+        BitmapPalette bmpPal;
+
+        public ImageColorAccess(WriteableBitmap inputImage)
         {
-            int h = input.PixelHeight;
-            int w = input.PixelWidth;
-            int widthInByte = 4 * w;
-            byte[] pixelData = new byte[widthInByte * h];
-            input.CopyPixels(pixelData, widthInByte, 0);
+            imageHeight = inputImage.PixelHeight;
+            imageWidth = inputImage.PixelWidth;
+            widthInByte = 4 * imageWidth;
+            pixelData = new byte[widthInByte * imageHeight];
+            inputImage.CopyPixels(pixelData, widthInByte, 0);
+            dpiX = inputImage.DpiX;
+            dpiY = inputImage.DpiY;
+            pixForm = inputImage.Format;
+            bmpPal = inputImage.Palette;
+        }
 
-            for (int y = 0; y < input.PixelHeight; y++)
+        public WriteableBitmap ConvertAnyNotWhitePixelsToBlack()
+        {
+            for (int y = 0; y < imageHeight; y++)
             {
-                for (int x = 0; x < input.PixelWidth; x++)
+                for (int x = 0; x < imageWidth; x++)
                 {
-                    int index = y * widthInByte + 4 * x;
-                    byte red = pixelData[index];
-                    byte green = pixelData[index + 1];
-                    byte blue = pixelData[index + 2];
-                    byte alpha = pixelData[index + 3];
-                    if (red != 255 || green != 255 || blue != 255 || alpha != 255)
-                    {
-                        pixelData[index] = 0;
-                        pixelData[index + 1] = 0;
-                        pixelData[index + 2] = 0;
-                        pixelData[index + 3] = 255;
-                    }
-
-                    //byte alpha = pixels[index + 3];
+                    int index = DataIndexFromXY(x, y);
+                    if (!IsPixelPureWhite(index))
+                        SetPixelColor(index, 0, 0, 0, 255);
                 }
             }
 
-            //for (int i = 0; i < pixelData.Length; i++)
-            //{
-            //    if (pixelData[i] != 0x00ffffff)
-            //        pixelData[i] = 0x00000000;
-            //}
+            var output = new WriteableBitmap(imageWidth, imageHeight, dpiX, dpiY, pixForm, bmpPal);
+            output.WritePixels(new Int32Rect(0, 0, imageWidth, imageHeight), pixelData, widthInByte, 0);
 
-            input.WritePixels(new Int32Rect(0, 0, w, h), pixelData, widthInByte, 0);
+            return output;
+        }
 
-            //for (int y = 0; y < input.Height; y++)
-            //{
-            //    for (int x = 0; x < input.Width; x++)
-            //    {
+        public bool IsPixelPureWhite(int x, int y)
+        {
+            return IsPixelPureWhite(DataIndexFromXY(x, y));
+        }
 
+        private bool IsPixelPureWhite(int index)
+        {
+            byte red = pixelData[index];
+            byte green = pixelData[index + 1];
+            byte blue = pixelData[index + 2];
+            byte alpha = pixelData[index + 3];
+            return red == 255 && green == 255 && blue == 255 && alpha == 255;
+        }
 
+        private void SetPixelColor(int index, byte R, byte G, byte B, byte A)
+        {
+            pixelData[index] = R;
+            pixelData[index + 1] = G;
+            pixelData[index + 2] = B;
+            pixelData[index + 3] = A;
+        }
 
-
-            //        Color pixelColor = input.GetPixel(x, y);
-            //        if (pixelColor.R != 255 || pixelColor.G != 255 || pixelColor.B != 255)
-            //        {
-            //            input.SetPixel(x, y, Color.Black);
-            //        }
-            //    }
-            //}
-            return input;
+        private int DataIndexFromXY(int x, int y)
+        {
+            return y * widthInByte + 4 * x;
         }
     }
 }
