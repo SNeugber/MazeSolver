@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MazeSolver.Console
+namespace MazeSolver
 {
     class PathNotFoundException : Exception
     {

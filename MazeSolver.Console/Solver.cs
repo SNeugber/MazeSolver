@@ -6,7 +6,7 @@ using System.Text;
 using System.Drawing;
 using Priority_Queue;
 
-namespace MazeSolver.Console
+namespace MazeSolver
 {
     public class Solver
     {

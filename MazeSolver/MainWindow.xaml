@@ -1,4 +1,4 @@
-﻿<Window x:Class="MazeSolver.MainWindow"
+﻿<Window x:Class="MazeSolver.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Maze Solver" Height="600" Width="910">
@@ -15,26 +15,12 @@
                 <Separator Width="5"/>
                 <MenuItem Name="SolveMazeButton" Header="_Solve" IsEnabled="False" Click="SolveMazeButton_Click"/>
             </Menu>
-
-            <!--<ToolBar DockPanel.Dock="Top" Name="fileSelectToolbar">
-                <Label Name="InputImageSelectLabel" Content="Input Image:"></Label>
-                <Button Name="SelectInputFileButton" Content="Click to select an input image file" Width="200" Click="SelectInputFileButton_Click"></Button>
-                <Button Name="SolveMazeButton" Content="Solve Maze" Click="SolveMazeButton_Click" IsEnabled="False"></Button>
-                <Label Name="OutputImageSelectLabel" Content="Output Image:"></Label>
-                <Button Name="SaveOutputFileButton" Content="Click to save the output to file" Width="200" Click="SaveOutputFileButton_Click" IsEnabled="False"></Button>
-                
-            </ToolBar>-->
             <Grid Name="mainGrid">
-                <!--<Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>-->
-                <!--<Viewbox Stretch="Uniform" Name="ImageViewBox">-->
-                    <Image Name="mazeImage" Stretch="Uniform" MouseDown="MazeImage_MouseDown">
-                        <Image.ToolTip>
-                            <ToolTip Name="ImageHoverToolTip" />
-                        </Image.ToolTip>
-                    </Image>
-                <!--</Viewbox>-->
+                <Image Name="mazeImage" Stretch="Uniform" MouseDown="MazeImage_MouseDown">
+                    <Image.ToolTip>
+                        <ToolTip Name="ImageHoverToolTip" />
+                    </Image.ToolTip>
+                </Image>
             </Grid>
         </DockPanel>
     </Grid>

@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows;
 
 
-namespace MazeSolver.Console
+namespace MazeSolver
 {
     public class ImageColorAccess
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using Priority_Queue;
 
-namespace MazeSolver.Console
+namespace MazeSolver
 {
     class Node : PriorityQueueNode
     {

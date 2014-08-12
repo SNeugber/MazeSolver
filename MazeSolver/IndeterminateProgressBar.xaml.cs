@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace MazeSolver
+namespace MazeSolver.UI
 {
     /// <summary>
     /// Interaction logic for IndeterminateProgressBar.xaml

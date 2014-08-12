@@ -15,9 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
-using MazeSolver.Console;
+using MazeSolver;
 
-namespace MazeSolver
+namespace MazeSolver.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -149,9 +149,9 @@ namespace MazeSolver
                 new Thread(() =>
                 {
                     //Thread.CurrentThread.IsBackground = true;
-                    var solver = new SolverController();
-                    solver.Solved += new SolverController.MazeSolvedHandler(MazeSolved);
-                    solver.TrySolveAndSaveToFile(inputFileName, tempFileName, mazeStart, mazeEnd);
+                    var solver = new MazeSolver.Program();
+                    solver.Solved += new MazeSolver.Program.MazeSolvedHandler(MazeSolved);
+                    solver.Run(inputFileName, tempFileName, mazeStart, mazeEnd);
                 }).Start();
                 progressBar = new IndeterminateProgressBar();
                 progressBar.Owner = this;
@@ -166,7 +166,7 @@ namespace MazeSolver
 
         }
 
-        private void MazeSolved(SolverController sc, EventArgs e)
+        private void MazeSolved(Program p, EventArgs e)
         {
             // Gets called from background worker thread, but need to access image in main UI thread
             uiContext.Post(new SendOrPostCallback(new Action<object>(o =>

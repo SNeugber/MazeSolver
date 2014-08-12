@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeSolver", "MazeSolver\MazeSolver.csproj", "{EFB14D5A-2F1E-42F9-BCBF-8CE58C388D6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeSolver.UI", "MazeSolver\MazeSolver.UI.csproj", "{EFB14D5A-2F1E-42F9-BCBF-8CE58C388D6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeSolver.Console", "MazeSolver.Console\MazeSolver.Console.csproj", "{4CEA7D3D-0F40-4AE6-9468-5DB1811F8D69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeSolver", "MazeSolver.Console\MazeSolver.csproj", "{4CEA7D3D-0F40-4AE6-9468-5DB1811F8D69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeSolver.Tests", "UnitTestProject1\MazeSolver.Tests.csproj", "{2238EE30-4B6B-4C9F-9976-1C1B5F7D80BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{4CEA7D3D-0F40-4AE6-9468-5DB1811F8D69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CEA7D3D-0F40-4AE6-9468-5DB1811F8D69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CEA7D3D-0F40-4AE6-9468-5DB1811F8D69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2238EE30-4B6B-4C9F-9976-1C1B5F7D80BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2238EE30-4B6B-4C9F-9976-1C1B5F7D80BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2238EE30-4B6B-4C9F-9976-1C1B5F7D80BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2238EE30-4B6B-4C9F-9976-1C1B5F7D80BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
