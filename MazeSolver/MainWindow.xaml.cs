@@ -68,8 +68,8 @@ namespace MazeSolver
                 imageColor = new ImageColorAccess(new WriteableBitmap(inputImage));
                 //ImageColorConverter
                 //MazeSolver.Console.ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(inputImage);
-                //WriteableBitmap blackAndWhiteImage = ImageColorConverter.ConvertAnyNotWhitePixelsToBlack(new WriteableBitmap(inputImage));
-                mazeImage.Source = inputImage;
+                WriteableBitmap blackAndWhiteImage = imageColor.ConvertAnyNotWhitePixelsToBlack();
+                mazeImage.Source = blackAndWhiteImage;
                 //mazeImage.Source = inputImage;
                 SetMazeStartGoalButton.IsEnabled = true;
             }
@@ -99,23 +99,25 @@ namespace MazeSolver
             SolveMazeButton.IsEnabled = false;
         }
 
-        private void MazeImage_MouseDown(object sender, RoutedEventArgs e)
+        private void MazeImage_MouseDown(object sender, MouseEventArgs e)
         {
-            Point MousePosition = Mouse.GetPosition((Image)sender);
+
+            Point ImagePosition = ImagePointFromClickInImageFrame(e.GetPosition(mazeImage));
             System.Diagnostics.Debug.WriteLine(
                 "Mouse position: " +
-                MousePosition.X + ", " + MousePosition.Y);
-            if (!mazeStartSet && imageColor.IsPixelPureWhite((int)MousePosition.X,(int)MousePosition.Y))
+                ImagePosition.X + ", " + ImagePosition.Y);
+
+            if (!mazeStartSet && imageColor.IsPixelPureWhite((int)ImagePosition.X, (int)ImagePosition.Y))
             {
                 mazeStartSet = true;
-                mazeStart = MousePosition;
+                mazeStart = ImagePosition;
                 ImageHoverToolTip.Content = "Set End";
             }
-            else if (!mazeEndSet && imageColor.IsPixelPureWhite((int)MousePosition.X, (int)MousePosition.Y))
+            else if (!mazeEndSet && imageColor.IsPixelPureWhite((int)ImagePosition.X, (int)ImagePosition.Y))
             {
 
                 mazeEndSet = true;
-                mazeEnd = MousePosition;
+                mazeEnd = ImagePosition;
                 SolveMazeButton.IsEnabled = true;
                 ImageHoverToolTip.Content = "All Set";
 
@@ -129,6 +131,12 @@ namespace MazeSolver
             //    MousePosition.X + ", " + MousePosition.Y);
         }
 
+        private Point ImagePointFromClickInImageFrame(Point mousePosition)
+        {
+            int x = (int)(((BitmapSource)mazeImage.Source).PixelWidth * mousePosition.X / mazeImage.ActualWidth);
+            int y = (int)(((BitmapSource)mazeImage.Source).PixelHeight * mousePosition.Y / mazeImage.ActualHeight);
+            return new Point(x, y);
+        }
 
         private void SolveMazeButton_Click(object sender, RoutedEventArgs e)
         {

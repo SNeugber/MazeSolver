@@ -11,9 +11,9 @@
                     <MenuItem Header="_Save" Click="SaveOutputFileButton_Click"/>
                 </MenuItem>
                 <Separator Width="5"/>
-                <MenuItem Name="SetMazeStartGoalButton" Header="_Set Start/End" Click="SetMazeStartGoalButton_Click"/>
+                <MenuItem Name="SetMazeStartGoalButton" Header="_Set Start/End" IsEnabled="False" Click="SetMazeStartGoalButton_Click"/>
                 <Separator Width="5"/>
-                <MenuItem Name="SolveMazeButton" Header="_Solve" Click="SolveMazeButton_Click"/>
+                <MenuItem Name="SolveMazeButton" Header="_Solve" IsEnabled="False" Click="SolveMazeButton_Click"/>
             </Menu>
 
             <!--<ToolBar DockPanel.Dock="Top" Name="fileSelectToolbar">
@@ -25,14 +25,16 @@
                 
             </ToolBar>-->
             <Grid Name="mainGrid">
-                <Grid.ColumnDefinitions>
+                <!--<Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Image Name="mazeImage" Stretch="Uniform" Grid.Column="0" MouseDown="MazeImage_MouseDown">
-                    <Image.ToolTip>
-                        <ToolTip Name="ImageHoverToolTip" />
-                    </Image.ToolTip>
-                </Image>
+                </Grid.ColumnDefinitions>-->
+                <!--<Viewbox Stretch="Uniform" Name="ImageViewBox">-->
+                    <Image Name="mazeImage" Stretch="Uniform" MouseDown="MazeImage_MouseDown">
+                        <Image.ToolTip>
+                            <ToolTip Name="ImageHoverToolTip" />
+                        </Image.ToolTip>
+                    </Image>
+                <!--</Viewbox>-->
             </Grid>
         </DockPanel>
     </Grid>
