@@ -93,10 +93,10 @@ namespace MazeSolver.UI
 
         private void SetMazeStartGoalButton_Click(object sender, RoutedEventArgs e)
         {
-            ImageHoverToolTip.Content = "Set Start";
             mazeStartSet = false;
             mazeEndSet = false;
             SolveMazeButton.IsEnabled = false;
+            ShowTextPopup("Click on the image to set the start and end points", 1000);
         }
 
         private void MazeImage_MouseDown(object sender, MouseEventArgs e)
@@ -111,7 +111,7 @@ namespace MazeSolver.UI
             {
                 mazeStartSet = true;
                 mazeStart = ImagePosition;
-                ImageHoverToolTip.Content = "Set End";
+                ShowTextPopup("Start Set", 500);
             }
             else if (!mazeEndSet && imageColor.IsPixelPureWhite((int)ImagePosition.X, (int)ImagePosition.Y))
             {
@@ -119,8 +119,7 @@ namespace MazeSolver.UI
                 mazeEndSet = true;
                 mazeEnd = ImagePosition;
                 SolveMazeButton.IsEnabled = true;
-                ImageHoverToolTip.Content = "All Set";
-
+                ShowTextPopup("End set", 500);
             }
             else
             {
@@ -151,11 +150,25 @@ namespace MazeSolver.UI
                     //Thread.CurrentThread.IsBackground = true;
                     var solver = new MazeSolver.Program();
                     solver.Solved += new MazeSolver.Program.MazeSolvedHandler(MazeSolved);
-                    solver.Run(inputFileName, tempFileName, mazeStart, mazeEnd);
+                    try
+                    {
+                        solver.Run(inputFileName, tempFileName, mazeStart, mazeEnd);
+                    }
+                    catch (PathNotFoundException pnfe)
+                    {
+                        uiContext.Post(new SendOrPostCallback(new Action<object>(o =>
+                        {
+                            if (progressBar != null)
+                            {
+                                progressBar.Close();
+                                progressBar = null;
+                            }
+                        })), null);
+                        ShowTextPopup("Could not solve the maze!", 1000);
+                    }
                 }).Start();
                 progressBar = new IndeterminateProgressBar();
                 progressBar.Owner = this;
-                progressBar.WindowStyle = WindowStyle.None;
                 progressBar.ShowDialog();
 
             }
@@ -178,14 +191,22 @@ namespace MazeSolver.UI
                 outputImage.EndInit();
                 mazeImage.Source = outputImage;
                 progressBar.Close();
+                progressBar = null;
             })), null);
-   
-            
         }
 
-
-
-
+        private void ShowTextPopup(string text, int durationInMilliSec)
+        {
+            uiContext.Post(new SendOrPostCallback(new Action<object>(o =>
+            {
+                var textPopup = new TextPopup();
+                textPopup.SetText(text);
+                textPopup.Owner = this;
+                textPopup.Show();
+                Thread.Sleep(durationInMilliSec);
+                textPopup.Close();
+            })), null);
+        }
     }
 }
 //

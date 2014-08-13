@@ -15,7 +15,7 @@ namespace MazeSolver
         private Point start, end;
         private HeapPriorityQueue<Node> unvisited;
         private int mazeMaxX, mazeMaxY;
-        private Node target;
+        private Node startNode, target;
 
         public Image Execute(Image inputImage, System.Windows.Point start, System.Windows.Point end)
         {
@@ -24,6 +24,7 @@ namespace MazeSolver
             var inputBitmap = new Bitmap(inputImage);
             InitMazeMap(inputBitmap);
             RunDijkstra();
+            if (!PathFound()) throw new PathNotFoundException();
             DrawMazePath(inputBitmap);
             //if (target == null) System.Console.WriteLine("No target found!");
             //else System.Console.WriteLine("Found path with cost: " + target.distance);
@@ -61,7 +62,7 @@ namespace MazeSolver
         private void UpdateStartNodePriority()
         {
 
-            Node startNode = mazeMap[this.start.X, this.start.Y];
+            startNode = mazeMap[this.start.X, this.start.Y];
             startNode.distance = 0;
             unvisited.UpdatePriority(startNode, 0);
         }
@@ -117,6 +118,17 @@ namespace MazeSolver
             {
                 mazeImage.SetPixel(previous.position.X, previous.position.Y, Color.Magenta);
             } while ((previous = previous.previous) != null);
+        }
+
+        private bool PathFound()
+        {
+            if (target == null) return false;
+            Node previous = target.previous;
+            do
+            {
+                if (previous == startNode) return true;
+            } while ((previous = previous.previous) != null);
+            return false;
         }
 
         private List<Node> GetUnvisitedNeighbours(Node current)

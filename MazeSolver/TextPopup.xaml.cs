@@ -17,12 +17,26 @@ namespace MazeSolver.UI
     /// <summary>
     /// Interaction logic for IndeterminateProgressBar.xaml
     /// </summary>
-    public partial class IndeterminateProgressBar : Window
+    public partial class TextPopup : Window
     {
-        public IndeterminateProgressBar()
+        public TextPopup()
         {
             InitializeComponent();
             this.WindowStyle = WindowStyle.None;
+        }
+
+        public void Show()
+        {
+            
+            base.Show();
+            this.Left = Owner.Left + Owner.ActualWidth - this.ActualWidth;
+            this.Top = Owner.Top + Owner.ActualHeight - this.ActualHeight;
+            
+        }
+
+        public void SetText(string text)
+        {
+            TextContent.Text = text;
         }
     }
 }

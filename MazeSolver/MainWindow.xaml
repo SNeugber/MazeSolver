@@ -16,11 +16,7 @@
                 <MenuItem Name="SolveMazeButton" Header="_Solve" IsEnabled="False" Click="SolveMazeButton_Click"/>
             </Menu>
             <Grid Name="mainGrid">
-                <Image Name="mazeImage" Stretch="Uniform" MouseDown="MazeImage_MouseDown">
-                    <Image.ToolTip>
-                        <ToolTip Name="ImageHoverToolTip" />
-                    </Image.ToolTip>
-                </Image>
+                <Image Name="mazeImage" Stretch="Uniform" MouseDown="MazeImage_MouseDown"/>
             </Grid>
         </DockPanel>
     </Grid>

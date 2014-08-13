@@ -1,0 +1,10 @@
+﻿<Window x:Class="MazeSolver.UI.TextPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TextPopup" Height="100" Width="300"
+        WindowStartupLocation="Manual"
+        SizeToContent="Height">
+    <Grid Margin="20">
+        <TextBlock Name="TextContent" Text="Placeholder" FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+</Window>
